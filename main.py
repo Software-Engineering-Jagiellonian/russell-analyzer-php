@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import time
+import xml.etree.ElementTree as ET
 
 from db import Database
 import variables
@@ -97,14 +98,20 @@ def calculate_metrics(repo_id):
     execute_query = "SELECT f.file_path, f.id FROM repository_language_file as f INNER JOIN repository_language as r ON f.repository_language_id = r.id WHERE r.repository_id ='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID + " AND r.present = true AND r.analyzed = false"
 
     db.connect()
-    for x in db.insert(execute_query, ""):
+    for x in db.execute_query(execute_query, ""):
         print(x[0])
         subprocess.run(["pdepend", "--summary-xml=metrics.xml", x[0]])
+        tree = ET.parse('metrics.xml')
+        root = tree.getroot()
+        print(root.attrib)
+        for child in root.iter('ahh'):
+            print(child.attrib)
 
-    execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
+    #execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
     db.update(execute_query, "")
     db.close()
     RMQ_publisher(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_OUT, repo_id)  # send confirmation to gc
 
 if __name__ == '__main__':
+    calculate_metrics('1')
     RMQ_consumer(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_IN)
