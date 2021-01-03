@@ -9,6 +9,6 @@ To run this app you need set a environment variables: `DB_HOST, DB_PORT, DB_USER
 Then just type `python3 main.py`
 
 ## Docker application
-Docker image of this app is available as **jagiellonian/frege-analyer-php**
+Docker image of this app is available as **jagiellonian/frege-analyzer-php**
 
-To run just type `docker run -it jagiellonian/frege-analyer-php`
+To run just type `docker run -it jagiellonian/frege-analyzer-php`

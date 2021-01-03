@@ -1,7 +1,6 @@
 import sys
 from psycopg2 import connect
 
-
 class Database:
     def __init__(self, db_name, username=None, password=None, host=None, port=None):
         self.db_name = db_name
