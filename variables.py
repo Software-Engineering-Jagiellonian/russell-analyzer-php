@@ -1,11 +1,8 @@
 import os
 import sys
 
-LANGUAGE_ID = 7
 QUEUE_IN = 'analyze-php'
 QUEUE_OUT = 'gc'
-
-REPO_ID = 0
 
 try:
    DB_HOST = os.environ['DB_HOST']
