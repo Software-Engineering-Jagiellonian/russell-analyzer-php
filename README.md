@@ -7,8 +7,3 @@ To install `pika` run `pip3 install pika`
 To run this app you need set a environment variables: `DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE, RMQ_HOST, RMQ_PORT`
 
 Then just type `python3 main.py`
-
-## Docker application
-Docker image of this app is available as **jagiellonian/frege-analyzer-php**
-
-To run just type `docker run -it jagiellonian/frege-analyzer-php`
