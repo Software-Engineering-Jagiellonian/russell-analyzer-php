@@ -40,4 +40,10 @@ try:
 except KeyError:
    print("Please set the environment variable RMQ_PORT")
    sys.exit(1)
+try:
+   RMQ_REJECTED_PUBLISH_DELAY = os.environ['RMQ_REJECTED_PUBLISH_DELAY']
+except KeyError:
+   print("Please set the environment variable RMQ_REJECTED_PUBLISH_DELAY")
+   sys.exit(1)
+
 
