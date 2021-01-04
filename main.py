@@ -102,7 +102,6 @@ def calculate_metrics(repo_id):
         print(x[0])
         subprocess.run(["pdepend", "--summary-xml=metrics.xml", x[0]])
         read_metric_from_file(db, x[1])
-        print(x[1])
 
     execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
     db.update(execute_query, "")
@@ -112,11 +111,21 @@ def calculate_metrics(repo_id):
 def read_metric_from_file(db, repository_language_file_id):
     tree = ET.parse('metrics.xml')
     root = tree.getroot()
-    save_metrcis_project(root, db, repository_language_file_id)
-    #save__metrics_package(root, db, repository_language_file_id)
 
-def save_metrcis_project(root, db, repository_language_file_id):
-    if root.tag == "metrics":
+    for c in root.iter('metrics'):
+        print("save metrics")
+        save_metrics_project(c, db, repository_language_file_id)
+    for c in root.iter('package'):
+        print("save package")
+        save_metrics_package(c, db, repository_language_file_id)
+    for c in root.iter('class'):
+        print("save class")
+        save_metrics_class(c, db, repository_language_file_id)
+    for c in root.iter('method'):
+        print("save method")
+        save_metrics_method(c, db, repository_language_file_id)
+
+def save_metrics_project(root, db, repository_language_file_id):
         ahh = 0 if root.attrib.get('ahh') == None else root.attrib.get('ahh')
         andc = 0 if root.attrib.get('andc') == None else root.attrib.get('andc')
         calls = 0 if root.attrib.get('calls') == None else root.attrib.get('calls')
@@ -143,8 +152,72 @@ def save_metrcis_project(root, db, repository_language_file_id):
                 "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         db.insert(query, (repository_language_file_id, ahh, andc, calls, ccn, ccn2, cloc, clsa, clsc, eloc, fanout, leafs, lloc, loc, maxDIT, ncloc, noc, nof, noi, nom, nop, roots))
 
+def save_metrics_package(root, db, repository_language_file_id):
+    cr = 0 if root.attrib.get('cr') == None else root.attrib.get('cr')
+    noc = 0 if root.attrib.get('noc') == None else root.attrib.get('noc')
+    nof = 0 if root.attrib.get('nof') == None else root.attrib.get('nof')
+    noi = 0 if root.attrib.get('noi') == None else root.attrib.get('noi')
+    nom = 0 if root.attrib.get('nom') == None else root.attrib.get('nom')
+    rcr = 0 if root.attrib.get('rcr') == None else root.attrib.get('rcr')
 
+    query = "INSERT INTO php_metrics_package (repository_language_file_id,cr,noc,nof,noi,nom,rcr) " \
+            "VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    db.insert(query, (repository_language_file_id,cr,noc,nof,noi,nom,rcr))
+
+def save_metrics_class(root, db, repository_language_file_id):
+    ca = 0 if root.attrib.get('ca') == None else root.attrib.get('ca')
+    cbo = 0 if root.attrib.get('cbo') == None else root.attrib.get('cbo')
+    ce = 0 if root.attrib.get('ce') == None else root.attrib.get('ce')
+    cis = 0 if root.attrib.get('cis') == None else root.attrib.get('cis')
+    cloc = 0 if root.attrib.get('cloc') == None else root.attrib.get('cloc')
+    cr = 0 if root.attrib.get('cr') == None else root.attrib.get('cr')
+    csz = 0 if root.attrib.get('csz') == None else root.attrib.get('csz')
+    dit = 0 if root.attrib.get('dit') == None else root.attrib.get('dit')
+    eloc = 0 if root.attrib.get('eloc') == None else root.attrib.get('eloc')
+    lloc = 0 if root.attrib.get('lloc') == None else root.attrib.get('lloc')
+    loc = 0 if root.attrib.get('loc') == None else root.attrib.get('loc')
+    noam = 0 if root.attrib.get('noam') == None else root.attrib.get('noam')
+    nocc = 0 if root.attrib.get('nocc') == None else root.attrib.get('nocc')
+    noom = 0 if root.attrib.get('noom') == None else root.attrib.get('noom')
+    ncloc = 0 if root.attrib.get('ncloc') == None else root.attrib.get('ncloc')
+    nom = 0 if root.attrib.get('nom') == None else root.attrib.get('nom')
+    npm = 0 if root.attrib.get('npm') == None else root.attrib.get('npm')
+    rcr = 0 if root.attrib.get('rcr') == None else root.attrib.get('rcr')
+    vars = 0 if root.attrib.get('vars') == None else root.attrib.get('vars')
+    varsi = 0 if root.attrib.get('varsi') == None else root.attrib.get('varsi')
+    varsnp = 0 if root.attrib.get('varsnp') == None else root.attrib.get('varsnp')
+    wmc = 0 if root.attrib.get('wmc') == None else root.attrib.get('wmc')
+    wmci = 0 if root.attrib.get('wmci') == None else root.attrib.get('wmci')
+    wmcnp = 0 if root.attrib.get('wmcnp') == None else root.attrib.get('wmcnp')
+
+    query = "INSERT INTO php_metrics_class (repository_language_file_id,ca,cbo,ce,cis,cloc,cr,csz,dit,eloc,lloc,loc,noam,nocc,noom,ncloc,nom,npm,rcr,vars,varsi,varsnp,wmc,wmci,wmcnp) " \
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    db.insert(query, (repository_language_file_id,ca,cbo,ce,cis,cloc,cr,csz,dit,eloc,lloc,loc,noam,nocc,noom,ncloc,nom,npm,rcr,vars,varsi,varsnp,wmc,wmci,wmcnp))
+
+def save_metrics_method(root, db, repository_language_file_id):
+    ccn = 0 if root.attrib.get('ccn') == None else root.attrib.get('ccn')
+    ccn2 = 0 if root.attrib.get('ccn2') == None else root.attrib.get('ccn2')
+    cloc = 0 if root.attrib.get('cloc') == None else root.attrib.get('cloc')
+    eloc = 0 if root.attrib.get('eloc') == None else root.attrib.get('eloc')
+    hb = 0 if root.attrib.get('hb') == None else root.attrib.get('hb')
+    hd = 0 if root.attrib.get('hd') == None else root.attrib.get('hd')
+    he = 0 if root.attrib.get('he') == None else root.attrib.get('he')
+    hi = 0 if root.attrib.get('hi') == None else root.attrib.get('hi')
+    hl = 0 if root.attrib.get('hl') == None else root.attrib.get('hl')
+    hnd = 0 if root.attrib.get('hnd') == None else root.attrib.get('hnd')
+    hnt = 0 if root.attrib.get('hnt') == None else root.attrib.get('hnt')
+    ht = 0 if root.attrib.get('ht') == None else root.attrib.get('ht')
+    hv = 0 if root.attrib.get('hv') == None else root.attrib.get('hv')
+    lloc = 0 if root.attrib.get('lloc') == None else root.attrib.get('lloc')
+    loc = 0 if root.attrib.get('loc') == None else root.attrib.get('loc')
+    mi = 0 if root.attrib.get('mi') == None else root.attrib.get('mi')
+    ncloc = 0 if root.attrib.get('ncloc') == None else root.attrib.get('ncloc')
+    npath = 0 if root.attrib.get('npath') == None else root.attrib.get('npath')
+
+    query = "INSERT INTO php_metrics_method (repository_language_file_id,ccn,ccn2,cloc,eloc,hb,hd,he,hi,hl,hnd,hnt,ht,hv,lloc,loc,mi,ncloc,npath) " \
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    db.insert(query, (repository_language_file_id,ccn,ccn2,cloc,eloc,hb,hd,he,hi,hl,hnd,hnt,ht,hv,lloc,loc,mi,ncloc,npath))
 
 if __name__ == '__main__':
-    #calculate_metrics('1')
+    calculate_metrics('1')
     RMQ_consumer(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_IN)
