@@ -101,17 +101,50 @@ def calculate_metrics(repo_id):
     for x in db.execute_query(execute_query, ""):
         print(x[0])
         subprocess.run(["pdepend", "--summary-xml=metrics.xml", x[0]])
-        tree = ET.parse('metrics.xml')
-        root = tree.getroot()
-        print(root.attrib)
-        for child in root.iter('ahh'):
-            print(child.attrib)
+        read_metric_from_file(db, x[1])
+        print(x[1])
 
-    #execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
+    execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
     db.update(execute_query, "")
     db.close()
     RMQ_publisher(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_OUT, repo_id)  # send confirmation to gc
 
+def read_metric_from_file(db, repository_language_file_id):
+    tree = ET.parse('metrics.xml')
+    root = tree.getroot()
+    save_metrcis_project(root, db, repository_language_file_id)
+    #save__metrics_package(root, db, repository_language_file_id)
+
+def save_metrcis_project(root, db, repository_language_file_id):
+    if root.tag == "metrics":
+        ahh = 0 if root.attrib.get('ahh') == None else root.attrib.get('ahh')
+        andc = 0 if root.attrib.get('andc') == None else root.attrib.get('andc')
+        calls = 0 if root.attrib.get('calls') == None else root.attrib.get('calls')
+        ccn = 0 if root.attrib.get('ccn') == None else root.attrib.get('ccn')
+        ccn2 = 0 if root.attrib.get('ccn2') == None else root.attrib.get('ccn2')
+        cloc = 0 if root.attrib.get('cloc') == None else root.attrib.get('cloc')
+        clsa = 0 if root.attrib.get('clsa') == None else root.attrib.get('clsa')
+        clsc = 0 if root.attrib.get('clsc') == None else root.attrib.get('clsc')
+        eloc = 0 if root.attrib.get('eloc') == None else root.attrib.get('eloc')
+        fanout = 0 if root.attrib.get('fanout') == None else root.attrib.get('fanout')
+        leafs = 0 if root.attrib.get('leafs') == None else root.attrib.get('leafs')
+        lloc = 0 if root.attrib.get('lloc') == None else root.attrib.get('lloc')
+        loc = 0 if root.attrib.get('loc') == None else root.attrib.get('loc')
+        maxDIT = 0 if root.attrib.get('maxDIT') == None else root.attrib.get('maxDIT')
+        ncloc = 0 if root.attrib.get('ncloc') == None else root.attrib.get('ncloc')
+        noc = 0 if root.attrib.get('noc') == None else root.attrib.get('noc')
+        nof = 0 if root.attrib.get('nof') == None else root.attrib.get('nof')
+        noi = 0 if root.attrib.get('noi') == None else root.attrib.get('noi')
+        nom = 0 if root.attrib.get('nom') == None else root.attrib.get('nom')
+        nop = 0 if root.attrib.get('nop') == None else root.attrib.get('nop')
+        roots = 0 if root.attrib.get('roots') == None else root.attrib.get('roots')
+
+        query = "INSERT INTO php_metrics_project (repository_language_file_id, ahh, andc, calls, ccn, ccn2, cloc, clsa, clsc, eloc, fanout, leafs, lloc, loc, maxDIT, ncloc, noc, nof, noi, nom, nop, roots)" \
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        db.insert(query, (repository_language_file_id, ahh, andc, calls, ccn, ccn2, cloc, clsa, clsc, eloc, fanout, leafs, lloc, loc, maxDIT, ncloc, noc, nof, noi, nom, nop, roots))
+
+
+
 if __name__ == '__main__':
-    calculate_metrics('1')
+    #calculate_metrics('1')
     RMQ_consumer(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_IN)
