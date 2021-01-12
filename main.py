@@ -79,7 +79,7 @@ def RMQ_publisher(rabbitmq_host, rabbitmq_port, queue, repo_id):
                 break
             except pika.exceptions.NackError:
                 print(f"{variables.QUEUE_OUT} - Message was REJECTED by RabbitMQ (queue {variables.QUEUE_OUT} full?) !")
-                time.sleep(variables.RMQ_REJECTED_PUBLISH_DELAY)
+                time.sleep(5)
 
     except pika.exceptions.AMQPConnectionError as exception:
         print(f"{variables.QUEUE_OUT} - AMQP Connection Error: {exception}")
