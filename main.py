@@ -79,7 +79,7 @@ def RMQ_publisher(rabbitmq_host, rabbitmq_port, queue, repo_id):
                 break
             except pika.exceptions.NackError:
                 print(f"{variables.QUEUE_OUT} - Message was REJECTED by RabbitMQ (queue {variables.QUEUE_OUT} full?) !")
-                time.sleep(5)
+                time.sleep(int(variables.RMQ_REJECTED_PUBLISH_DELAY))
 
     except pika.exceptions.AMQPConnectionError as exception:
         print(f"{variables.QUEUE_OUT} - AMQP Connection Error: {exception}")
@@ -92,16 +92,16 @@ def RMQ_publisher(rabbitmq_host, rabbitmq_port, queue, repo_id):
         sys.exit(0)
 
 def calculate_metrics(repo_id):
-    db = Database(variables.DB_DATABASE, variables.DB_USERNAME, variables.DB_PASSWORD, variables.DB_HOST,
-                  variables.DB_PORT)
-
     execute_query = "SELECT f.file_path, f.id FROM repository_language_file as f INNER JOIN repository_language as r ON f.repository_language_id = r.id WHERE r.repository_id ='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID + " AND r.present = true AND r.analyzed = false"
 
     db.connect()
     for x in db.execute_query(execute_query, ""):
-        print(x[0])
-        subprocess.run(["pdepend", "--summary-xml=metrics.xml", x[0]])
-        read_metric_from_file(db, x[1])
+        if Path(x[0]).is_file():
+            print(x[0])
+            subprocess.run(["pdepend", "--summary-xml=metrics.xml", "--quiet", x[0]])
+            read_metric_from_file(db, x[1])
+        else:
+            print("File " + x[0] + " not exist")
 
     execute_query = "UPDATE repository_language SET analyzed = true WHERE repository_id='" + repo_id + "' AND language_id = " + variables.LANGUAGE_ID
     db.update(execute_query, "")
@@ -219,5 +219,11 @@ def save_metrics_method(root, db, repository_language_file_id):
     db.insert(query, (repository_language_file_id,ccn,ccn2,cloc,eloc,hb,hd,he,hi,hl,hnd,hnt,ht,hv,lloc,loc,mi,ncloc,npath))
 
 if __name__ == '__main__':
-    calculate_metrics('1')
+    db = Database(variables.DB_DATABASE, variables.DB_USERNAME, variables.DB_PASSWORD, variables.DB_HOST, variables.DB_PORT)
+    sql_file = open("db_create_table.sql")
+    sql_as_string = sql_file.read()
+    db.connect()
+    db.create_table(sql_as_string)
+    db.close()
+
     RMQ_consumer(variables.RMQ_HOST, variables.RMQ_PORT, variables.QUEUE_IN)

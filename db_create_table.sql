@@ -1,86 +1,112 @@
-CREATE TABLE php_metrics_project (
-	id BIGSERIAL PRIMARY KEY,
-	repository_language_file_id bigint,
-	ahh int,
-	andc int,
-	calls int,
-	ccn int,
-	ccn2 int,
-	cloc int,
-	clsa int,
-	clsc int,
-	eloc int,
-	fanout int,
-	leafs int,
-	lloc int,
-	loc int,
-	maxDIT int,
-	ncloc int,
-	noc int,
-	nof int,
-	noi int,
-	nom int,
-	nop int,
-	roots int
+CREATE TABLE IF NOT EXISTS public.php_metrics_project
+(
+    id BIGSERIAL PRIMARY KEY,
+    repository_language_file_id bigint,
+    ahh integer,
+    andc integer,
+    calls integer,
+    ccn integer,
+    ccn2 integer,
+    cloc integer,
+    clsa integer,
+    clsc integer,
+    eloc integer,
+    fanout integer,
+    leafs integer,
+    lloc integer,
+    loc integer,
+    maxdit integer,
+    ncloc integer,
+    noc integer,
+    nof integer,
+    noi integer,
+    nom integer,
+    nop integer,
+    roots integer,
+    CONSTRAINT repository_language_file_id FOREIGN KEY (repository_language_file_id)
+        REFERENCES public.repository_language_file (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
 );
-CREATE TABLE php_metrics_package (
-	id BIGSERIAL PRIMARY KEY,
-	repository_language_file_id bigint,
-	cr float,
-	noc int,
-	nof int,
-	noi int,
-	nom int,
-	rcr float
 
+CREATE TABLE IF NOT EXISTS public.php_metrics_package
+(
+    id BIGSERIAL PRIMARY KEY,
+    repository_language_file_id bigint,
+    cr double precision,
+    noc integer,
+    nof integer,
+    noi integer,
+    nom integer,
+    rcr double precision,
+    CONSTRAINT repository_language_file_id FOREIGN KEY (repository_language_file_id)
+        REFERENCES public.repository_language_file (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
 );
-CREATE TABLE php_metrics_class (
-	id BIGSERIAL PRIMARY KEY,
-	repository_language_file_id bigint,
-	ca int,
-	cbo int,
-	ce int,
-	cis int,
-	cloc int,
-	cr float,
-	csz int,
-	dit int,
-	eloc int,
-	lloc int,
-	loc int,
-	noam int,
-	nocc int,
-	noom int,
-	ncloc int,
-	nom int,
-	npm int,
-	rcr float,
-	vars int,
-	varsi int,
-	varsnp int,
-	wmc int,
-	wmci int,
-	wmcnp int
+
+CREATE TABLE IF NOT EXISTS public.php_metrics_class
+(
+    id BIGSERIAL PRIMARY KEY,
+    repository_language_file_id bigint,
+    ca integer,
+    cbo integer,
+    ce integer,
+    cis integer,
+    cloc integer,
+    cr double precision,
+    csz integer,
+    dit integer,
+    eloc integer,
+    lloc integer,
+    loc integer,
+    noam integer,
+    nocc integer,
+    noom integer,
+    ncloc integer,
+    nom integer,
+    npm integer,
+    rcr double precision,
+    vars integer,
+    varsi integer,
+    varsnp integer,
+    wmc integer,
+    wmci integer,
+    wmcnp integer,
+    CONSTRAINT repository_language_file_id FOREIGN KEY (repository_language_file_id)
+        REFERENCES public.repository_language_file (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
 );
-CREATE TABLE php_metrics_method (
-	id BIGSERIAL PRIMARY KEY,
-	repository_language_file_id bigint,
-	ccn int,
-	ccn2 int,
-	cloc int,
-	eloc int,
-	hb float,
-	hd float,
-	he float,
-	hi float,
-	hl float,
-	hnd int,
-	hnt int,
-	ht float,
-	hv float,
-	lloc int,
-	loc int,
-	mi float,
-	ncloc int,
-	npath int
+
+CREATE TABLE IF NOT EXISTS public.php_metrics_method
+(
+    id BIGSERIAL PRIMARY KEY,
+    repository_language_file_id bigint,
+    ccn integer,
+    ccn2 integer,
+    cloc integer,
+    eloc integer,
+    hb double precision,
+    hd double precision,
+    he double precision,
+    hi double precision,
+    hl double precision,
+    hnd integer,
+    hnt integer,
+    ht double precision,
+    hv double precision,
+    lloc integer,
+    loc integer,
+    mi double precision,
+    ncloc integer,
+    npath integer,
+    CONSTRAINT repository_language_file_id FOREIGN KEY (repository_language_file_id)
+        REFERENCES public.repository_language_file (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
 );

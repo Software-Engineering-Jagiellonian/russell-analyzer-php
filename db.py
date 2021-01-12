@@ -71,3 +71,7 @@ class Database:
         self.commit()
         count = cursor.rowcount
         return count
+
+    def create_table(self, query, args=None):
+        self.execute_query(query,args)
+        self.commit()
