@@ -1,4 +1,4 @@
-# Frege Analyzer PHP
+# Russell Analyzer PHP
 
 ## Docker environment variables
 
@@ -21,7 +21,7 @@
 **All the environment variables mentioned above are required to run the container**
 
 ## Docker application
-Docker image of this app is available as **jagiellonian/frege-analyzer-php**
+Docker image of this app is available as **jagiellonian/russell-analyzer-php**
 
 To run just type e.g. `docker run -it -v /home:/home -e DB_HOST="172.17.0.4" -e DB_PORT="5432" -e DB_USERNAME="postgres" -e DB_PASSWORD="frege_password" -e DB_DATABASE="frege" -e RMQ_HOST="172.17.0.2" -e RMQ_PORT="5672" -e RMQ_REJECTED_PUBLISH_DELAY="5" jagiellonian/frege-analyzer-php:latest
 `
